@@ -17,24 +17,25 @@ class RedisCache(CacheInterface):
                       image_quality=None, rendering_engine='UNKNOWN'):
         return super(RedisCache, self)._get_tile_key(image_id, level, column, row,
                                                      tile_size, image_format,
-                                                     image_quality)
+                                                     image_quality, rendering_engine)
 
     def _get_thumbnail_key(self, image_id, thumbnail_size, image_format, rendering_engine='UNKNOWN'):
-        return super(RedisCache, self)._get_thumbnail_key(image_id, thumbnail_size, image_format)
+        return super(RedisCache, self)._get_thumbnail_key(image_id, thumbnail_size, image_format,
+                                                          rendering_engine)
 
     def tile_to_cache(self, image_id, image_obj, level, column, row, tile_size, image_format,
-                      image_quality=None):
+                      image_quality=None, rendering_engine='UNKNOWN'):
         out_buffer = StringIO()
         image_obj.save(out_buffer, image_format)
         tile_key = self._get_tile_key(image_id, level, column, row, tile_size,
-                                      image_format.upper(), image_quality)
+                                      image_format.upper(), image_quality, rendering_engine)
         self.client.set(tile_key, out_buffer.getvalue())
         self._set_expire_time(tile_key)
 
     def tile_from_cache(self, image_id, level, column, row, tile_size, image_format,
-                        image_quality=None):
+                        image_quality=None, rendering_engine='UNKNOWN'):
         tile_key = self._get_tile_key(image_id, level, column, row, tile_size,
-                                      image_format.upper(), image_quality)
+                                      image_format.upper(), image_quality, rendering_engine)
         self.logger.info('Tile from cache: %s' % tile_key)
         tile_str = self.client.get(tile_key)
         if tile_str:
@@ -48,15 +49,16 @@ class RedisCache(CacheInterface):
             self.logger.info('No tile')
             return None
 
-    def thumbnail_to_cache(self, image_id, image_obj, thumbnail_size, image_format):
+    def thumbnail_to_cache(self, image_id, image_obj, thumbnail_size, image_format,
+                           rendering_engine='UNKNOWN'):
         out_buffer = StringIO()
         image_obj.save(out_buffer, image_format)
-        th_key = self._get_thumbnail_key(image_id, thumbnail_size, image_format)
+        th_key = self._get_thumbnail_key(image_id, thumbnail_size, image_format, rendering_engine)
         self.client.set(th_key, out_buffer.getvalue())
         self._set_expire_time(th_key)
 
-    def thumbnail_from_cache(self, image_id, thumbnail_size, image_format):
-        th_key = self._get_thumbnail_key(image_id, thumbnail_size, image_format)
+    def thumbnail_from_cache(self, image_id, thumbnail_size, image_format, rendering_engine='UNKNOWN'):
+        th_key = self._get_thumbnail_key(image_id, thumbnail_size, image_format, rendering_engine)
         self.logger.info('Thumbnail from cache: %s' % th_key)
         img_str = self.client.get(th_key)
         if img_str:

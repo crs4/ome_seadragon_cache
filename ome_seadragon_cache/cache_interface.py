@@ -22,18 +22,20 @@ class CacheInterface(object):
 
     @abstractmethod
     def tile_to_cache(self, image_id, image_obj, level, column, row, tile_size, image_format,
-                      image_quality=None):
+                      image_quality=None, rendering_engine='UNKNOWN'):
         pass
 
     @abstractmethod
     def tile_from_cache(self, image_id, level, column, row, tile_size, image_format,
-                        image_quality=None):
+                        image_quality=None, rendering_engine='UNKNOWN'):
         pass
 
     @abstractmethod
-    def thumbnail_to_cache(self, image_id, image_obj, thumbnail_size, image_format):
+    def thumbnail_to_cache(self, image_id, image_obj, thumbnail_size, image_format,
+                           rendering_engine='UNKNOWN'):
         pass
 
     @abstractmethod
-    def thumbnail_from_cache(self, image_id, thumbnail_size, image_format):
+    def thumbnail_from_cache(self, image_id, thumbnail_size, image_format,
+                             rendering_engine='UNKNOWN'):
         pass
