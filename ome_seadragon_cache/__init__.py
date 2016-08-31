@@ -1,3 +1,5 @@
+from utils import time_dict_to_seconds
+
 class UnknownCacheDriver(Exception):
     pass
 
@@ -15,6 +17,7 @@ class CacheDriverFactory(object):
     def _get_redis_driver(self, host, port, db, expire_time):
         from redis_cache import RedisCache
 
+        expire_time = time_dict_to_seconds(expire_time)
         return RedisCache(host, port, db, expire_time)
 
     def get_cache(self, host=None, port=None, db=None, expire_time=None):
