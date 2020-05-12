@@ -1,6 +1,6 @@
 import logging
 import redis
-from cStringIO import StringIO
+from io import StringIO
 from PIL import Image
 
 from cache_interface import CacheInterface
