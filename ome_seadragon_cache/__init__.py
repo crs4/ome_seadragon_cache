@@ -1,4 +1,4 @@
-from utils import time_dict_to_seconds
+from .utils import time_dict_to_seconds
 
 
 class UnknownCacheDriver(Exception):
@@ -11,12 +11,12 @@ class CacheDriverFactory(object):
         self.cache_driver = cache_driver
 
     def _get_fake_cache(self):
-        from fake_cache import FakeCache
+        from .fake_cache import FakeCache
 
         return FakeCache()
 
     def _get_redis_driver(self, host, port, db, expire_time):
-        from redis_cache import RedisCache
+        from .redis_cache import RedisCache
 
         expire_time = time_dict_to_seconds(expire_time)
         return RedisCache(host, port, db, expire_time)

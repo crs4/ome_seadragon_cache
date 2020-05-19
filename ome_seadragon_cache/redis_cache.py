@@ -3,7 +3,7 @@ import redis
 from io import StringIO
 from PIL import Image
 
-from cache_interface import CacheInterface
+from .cache_interface import CacheInterface
 
 
 class RedisCache(CacheInterface):
