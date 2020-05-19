@@ -1,9 +1,9 @@
 import logging
 import redis
-from cStringIO import StringIO
+from io import BytesIO
 from PIL import Image
 
-from cache_interface import CacheInterface
+from .cache_interface import CacheInterface
 
 
 class RedisCache(CacheInterface):
@@ -25,7 +25,7 @@ class RedisCache(CacheInterface):
 
     def tile_to_cache(self, image_id, image_obj, level, column, row, tile_size, image_format,
                       image_quality=None, rendering_engine='UNKNOWN'):
-        out_buffer = StringIO()
+        out_buffer = BytesIO()
         image_obj.save(out_buffer, image_format)
         tile_key = self._get_tile_key(image_id, level, column, row, tile_size,
                                       image_format.upper(), image_quality, rendering_engine)
@@ -40,7 +40,7 @@ class RedisCache(CacheInterface):
         tile_str = self.client.get(tile_key)
         if tile_str:
             self.logger.info('Tile retrieved')
-            img_buffer = StringIO(tile_str)
+            img_buffer = BytesIO(tile_str)
             image = Image.open(img_buffer)
             # reset expire time for this image
             self._set_expire_time(tile_key)
@@ -51,7 +51,7 @@ class RedisCache(CacheInterface):
 
     def thumbnail_to_cache(self, image_id, image_obj, thumbnail_size, image_format,
                            rendering_engine='UNKNOWN'):
-        out_buffer = StringIO()
+        out_buffer = BytesIO()
         image_obj.save(out_buffer, image_format)
         th_key = self._get_thumbnail_key(image_id, thumbnail_size, image_format, rendering_engine)
         self.client.set(th_key, out_buffer.getvalue())
@@ -63,7 +63,7 @@ class RedisCache(CacheInterface):
         img_str = self.client.get(th_key)
         if img_str:
             self.logger.info('Thumbnail retrieved')
-            img_buffer = StringIO(img_str)
+            img_buffer = BytesIO(img_str)
             image = Image.open(img_buffer)
             # reset expire time for this image
             self._set_expire_time(th_key)
